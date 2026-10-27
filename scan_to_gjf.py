@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Select Gaussian scan geometries and write optimization/frequency .gjf files.
+"""Analyzes results of Gaussian dihedral scans and produces corresponding .gjfs of the lowest energies found, based on group conventions.
+See the input and selection settings below to modify.
+File format: "XXX_scanN.out"
+If multiple scans of the same molecule find different lower energy states, new .gjfs will be created that re-scan these lowest energies together to find the true global minimum.
 
 Example:
     python scan_to_gjf.py
