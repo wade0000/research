@@ -29,9 +29,13 @@ Energies reported (Hartree values converted to kcal/mol and kJ/mol):
 
 Usage
 -----
+    python bond_energies.py
     python bond_energies.py my_folder
     python bond_energies.py my_folder --parent my_folder/ethane.out --csv results.csv
     python bond_energies.py my_folder --units kj
+
+If folder is omitted, the script's directory is used. Results are written to
+results.csv in the selected folder unless another path is given with --csv.
 """
 
 import argparse
@@ -156,11 +160,15 @@ def find_pairs(folder, parent_path):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("folder", help="folder containing Gaussian 16 .out files")
+    ap.add_argument("folder", nargs="?",
+                    default=Path(__file__).resolve().parent,
+                    help="folder containing Gaussian 16 .out files "
+                         "(default: script directory)")
     ap.add_argument("--parent", help="path to the parent molecule .out file")
     ap.add_argument("--units", choices=["kcal", "kj", "hartree"], default="kcal",
                     help="output units (default: kcal/mol)")
-    ap.add_argument("--csv", help="also write results to this CSV file")
+    ap.add_argument("--csv", help="write results to this CSV file "
+                                  "(default: results.csv in the selected folder)")
     args = ap.parse_args()
 
     folder = Path(args.folder)
@@ -223,15 +231,15 @@ def main():
           "thermochemistry block\n(requires freq jobs on parent and all fragments, "
           "at consistent levels of theory).")
 
-    if args.csv:
-        with open(args.csv, "w", newline="") as fh:
-            w = csv.writer(fh)
-            w.writerow(["pair", "frag1_file", "frag2_file"]
-                       + [f"{c}_{unit_label}" for c in cols] + ["warnings"])
-            for r in rows:
-                w.writerow([r["pair"], r["frag1"], r["frag2"]]
-                           + [f"{r[c]:.4f}" for c in cols] + [r["warnings"]])
-        print(f"\nWrote {args.csv}")
+    csv_path = Path(args.csv) if args.csv else folder / "results.csv"
+    with open(csv_path, "w", newline="") as fh:
+        w = csv.writer(fh)
+        w.writerow(["pair", "frag1_file", "frag2_file"]
+                   + [f"{c}_{unit_label}" for c in cols] + ["warnings"])
+        for r in rows:
+            w.writerow([r["pair"], r["frag1"], r["frag2"]]
+                       + [f"{r[c]:.4f}" for c in cols] + [r["warnings"]])
+    print(f"\nWrote {csv_path}")
 
 
 if __name__ == "__main__":
