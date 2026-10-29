@@ -5,8 +5,8 @@ File format: "XXX_scanN.out"
 If multiple scans of the same molecule find different lower energy states, new .gjfs will be created that re-scan these lowest energies together to find the true global minimum.
 
 Example:
-    python scan_to_gjf.py
-    python scan_to_gjf.py --scan-dir ./scans --out-dir ./gjf_out
+    python dihedralResultsScan.py
+    python dihedralResultsScan.py --scan-dir ./scans --out-dir ./gjf_out
 
 PM6 scans produce up to three ranked, distinct geometries per species. All
 generated inputs retain the configured B3LYP optimization/frequency route.
@@ -25,7 +25,7 @@ from decimal import Decimal
 from pathlib import Path
 from typing import Sequence
 
-
+"""ADJUST GAUSSIAN SETTINGS HERE- this pertains to the new files being generated"""
 # User-adjustable Gaussian input and selection settings.
 MEM = "32GB"
 NPROC = 16
